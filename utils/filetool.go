@@ -9,7 +9,7 @@ func PathExists(path string) (bool, error) {
 		return true, nil
 	}
 	if os.IsNotExist(err) {
-		return true, nil
+		return false, nil
 	}
 	return false, err
 }
