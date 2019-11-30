@@ -15,9 +15,9 @@ func TestMyhooks(t *testing.T) {
 
 	LogInit("", "dev", nil)
 	info := LogInfo{}
-	info.UserAccount = "test"
+	info.UserAccount = "test1"
 	info.Result = "ok"
-	info.Action = "test"
+	info.Action = "test1"
 
 	log.Info(ToMap(info))
 	log.Error(ToMap(info))
