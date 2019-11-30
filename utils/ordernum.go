@@ -7,7 +7,7 @@ import (
 )
 
 /*
-   GetOrderNum 计算订单号，订单号格式yyyymmddDDmmss+5位随机数
+   GetOrderNum  计算订单号，订单号格式yyyymmddDDmmss+5位随机数
 */
 func GetOrderNum() string {
 	ntime := time.Now()
