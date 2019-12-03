@@ -18,14 +18,14 @@ func PathExists(path string) (bool, error) {
 }
 
 //获取绝对路径
-func getPath() string {
+func GetPath() string {
 	dir, _ := os.Getwd()
 
 	return dir + "/"
 }
 
 //获取上级路径
-func getParentDirectory() string {
+func GetParentDirectory() string {
 	dir, _ := os.Getwd()
 	index := strings.LastIndex(dir, "/")
 	runes := []rune(dir)
