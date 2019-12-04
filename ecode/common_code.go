@@ -16,4 +16,6 @@ var (
 	DataUnLockException         = New(1009, "数据解除锁定异常")
 	UploadDataIsNull            = New(1010, "上传数据为空")
 	CloseTheWindowTryAgain      = New(1011, "关闭窗口重新尝试")
+	AuditTemplateStatusLeave    = New(1012, "审核流程中有人员已离职，请联系管理员")
+	AuditTemplateStatusUnnormal = New(1013, "审核模版异常，请联系管理员")
 )
