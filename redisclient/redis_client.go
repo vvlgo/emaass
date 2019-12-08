@@ -126,3 +126,30 @@ func (myredis MyRedisReConn) Redo(command string, opt ...interface{}) (interface
 	conn.Close()
 	return "", errors.New("redis error")
 }
+
+//插入值
+func (myredis MyRedisReConn) Set(key, value string) error {
+	_, err := myredis.Redo("SET", key, value)
+	return err
+}
+
+//失效方式插入值
+func (myredis MyRedisReConn) ExpiresSet(key, value string, expiresTime int) error {
+	_, err := myredis.Redo("SET", key, value, "EX", expiresTime)
+	return err
+}
+
+//取值
+func (myredis MyRedisReConn) Get(key string) (string, error) {
+	s, err := redis.String(myredis.Redo("GET", key))
+	if s == "" {
+		return "", errors.New("nil data")
+	}
+	return s, err
+}
+
+//删除
+func (myredis MyRedisReConn) Del(key string) error {
+	_, err := myredis.Redo("DEL", key)
+	return err
+}
