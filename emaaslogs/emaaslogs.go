@@ -48,35 +48,43 @@ func (hook contextHook) Levels() []logrus.Level {
 
 // Fire implement fire
 func (hook contextHook) Fire(entry *logrus.Entry) error {
-	entry.Data[hook.Field] = findCaller(hook.Skip)
+	for k, v := range findCaller(hook.Skip) {
+		entry.Data[k] = v
+	}
 	return nil
 }
 
 // 对caller进行递归查询, 直到找到非logrus包产生的第一个调用.
 // 因为filename我获取到了上层目录名, 因此所有logrus包的调用的文件名都是 logrus/...
 // 因此通过排除logrus开头的文件名, 就可以排除所有logrus包的自己的函数调用
-func findCaller(skip int) string {
+func findCaller(skip int) map[string]interface{} {
+	fnname := ""
 	file := ""
 	line := 0
+	res := make(map[string]interface{})
 	for i := 0; i < 10; i++ {
-		file, line = getCaller(skip + i)
-		if !strings.HasPrefix(file, "logrus") {
+		fnname, file, line = getCaller(skip + i)
+		if !strings.HasPrefix(file, "logrus") && !strings.HasPrefix(file, "logger") {
 			break
 		}
 	}
-	return fmt.Sprintf("%s:%d", file, line)
+	res["line"] = fmt.Sprintf("%s:%d", file, line)
+	res["method"] = fnname
+	return res
 }
 
 // 这里其实可以获取函数名称的: fnName := runtime.FuncForPC(pc).Name()
 // 但是我觉得有 文件名和行号就够定位问题, 因此忽略了caller返回的第一个值:pc
 // 在标准库log里面我们可以选择记录文件的全路径或者文件名, 但是在使用过程成并发最合适的,
 // 因为文件的全路径往往很长, 而文件名在多个包中往往有重复, 因此这里选择多取一层, 取到文件所在的上层目录那层.
-func getCaller(skip int) (string, int) {
+func getCaller(skip int) (string, string, int) {
 	_, file, line, ok := runtime.Caller(skip)
+	pc, _, _, _ := runtime.Caller(skip)
+	fnName := runtime.FuncForPC(pc).Name()
 	//fmt.Println(file)
 	//fmt.Println(line)
 	if !ok {
-		return "", 0
+		return "", "", 0
 	}
 	n := 0
 	for i := len(file) - 1; i > 0; i-- {
@@ -88,7 +96,7 @@ func getCaller(skip int) (string, int) {
 			}
 		}
 	}
-	return file, line
+	return fnName, file, line
 }
 
 //ConfigLocalFilesystemLogger config logrus log to local filesystem, with file rotation
